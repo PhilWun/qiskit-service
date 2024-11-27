@@ -16,14 +16,12 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 # ******************************************************************************
-from qiskit.providers.ibmq import IBMQAccountError
-
 from app import app, benchmarking, ibmq_handler, implementation_handler, db, parameters, circuit_analysis, analysis
 from app.benchmark_model import Benchmark
 from app.qpu_metrics import generate_deterministic_uuid, get_all_qpus_and_metrics_as_json_str
 from app.result_model import Result
 from flask import jsonify, abort, request
-from qiskit import transpile
+from qiskit import transpile, qasm2
 from qiskit.transpiler.exceptions import TranspilerError
 import json
 import base64
@@ -161,7 +159,7 @@ def transpile_circuit():
                     'number-of-single-qubit-gates': number_of_single_qubit_gates,
                     'number-of-multi-qubit-gates': number_of_multi_qubit_gates,
                     'number-of-measurement-operations': number_of_measurement_operations,
-                    'transpiled-qasm': transpiled_circuit.qasm()}), 200
+                    'transpiled-qasm': qasm2.dumps(transpiled_circuit)}), 200
 
 
 @app.route('/qiskit-service/api/v1.0/analyze-original-circuit', methods=['POST'])

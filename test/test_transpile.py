@@ -21,7 +21,6 @@ import unittest
 import os
 from app.config import basedir
 from app import app, db
-import qiskit
 import base64
 from qiskit.circuit.random import random_circuit
 
@@ -29,18 +28,19 @@ from qiskit.circuit.random import random_circuit
 class TranspileTestCase(unittest.TestCase):
 
     def setUp(self):
+        with app.app_context():
+            # setup environment variables for testing
+            app.config['TESTING'] = True
+            app.config['WTF_CSRF_ENABLED'] = False
+            app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(basedir, 'test.db')
 
-        # setup environment variables for testing
-        app.config['TESTING'] = True
-        app.config['WTF_CSRF_ENABLED'] = False
-        app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///" + os.path.join(basedir, 'test.db')
-
-        self.client = app.test_client()
-        db.create_all()
+            self.client = app.test_client()
+            db.create_all()
 
     def tearDown(self):
-        db.session.remove()
-        db.drop_all()
+        with app.app_context():
+            db.session.remove()
+            db.drop_all()
 
     def test_version(self):
 
@@ -122,7 +122,7 @@ class TranspileTestCase(unittest.TestCase):
         self.assertEqual(r.status_code, 202)
         print(r.headers.get("Location"))
 
-    def test_transpile_shor_lima_file(self):
+    def test_transpile_shor_kyiv_file(self):
 
         # prepare the request
         file_path = (os.path.dirname(__file__))+'/data/shor-fix-15.py'
@@ -131,7 +131,7 @@ class TranspileTestCase(unittest.TestCase):
         request = {
             'impl-data': impl_data,
             'impl-language': 'Qiskit',
-            'qpu-name': "ibmq_lima",
+            'qpu-name': "ibm_kyiv",
             'input-params': {},
             'token': os.environ["QISKIT_TOKEN"]
         }

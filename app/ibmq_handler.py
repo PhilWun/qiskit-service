@@ -18,29 +18,30 @@
 # ******************************************************************************
 from time import sleep
 
-from qiskit import QiskitError, QuantumRegister, execute
-from qiskit.ignis.mitigation import CompleteMeasFitter, complete_meas_cal
-from qiskit.providers.ibmq import IBMQ
+from qiskit import QiskitError, QuantumRegister
+from qiskit.providers import BackendV2
 from qiskit.providers.jobstatus import JOB_FINAL_STATES
 from qiskit.providers.exceptions import JobError, JobTimeoutError
-from qiskit.providers.exceptions import QiskitBackendNotFoundError
-from qiskit.providers.ibmq.api.exceptions import RequestsApiError
+from qiskit_ibm_runtime import QiskitRuntimeService
 
 
-def get_qpu(token, qpu_name, url='https://auth.quantum-computing.ibm.com/api', hub='ibm-q', group='open', project='main'):
+def get_qpu(token, qpu_name, url='https://auth.quantum-computing.ibm.com/api', hub='ibm-q', group='open', project='main') -> BackendV2:
     """Load account from token. Get backend."""
     try:
-        IBMQ.disable_account()
+        QiskitRuntimeService.delete_account()
     except:
         pass
-    provider = IBMQ.enable_account(token=token, url=url, hub=hub, group=group, project=project)
-    backend = provider.get_backend(qpu_name)
+
+    QiskitRuntimeService.save_account(channel="ibm_quantum", token=token, overwrite=True, set_as_default=True)
+    service = QiskitRuntimeService()
+    backend = service.backend(qpu_name, instance=f"{hub}/{group}/{project}")
+
     return backend
 
 
 def delete_token():
     """Delete account."""
-    IBMQ.delete_account()
+    QiskitRuntimeService.delete_account()
 
 
 def execute_job(transpiled_circuit, shots, backend):

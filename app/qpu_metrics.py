@@ -1,13 +1,11 @@
-import time
 from datetime import datetime
 from hashlib import sha256
 from multiprocessing import Pool
 from typing import List
 from uuid import UUID
 
-from qiskit.providers.ibmq import IBMQ, IBMQBackend
 from marshmallow import Schema, fields
-from qiskit.providers.ibmq.ibmqbackend import IBMQSimulator
+from qiskit_ibm_runtime import QiskitRuntimeService, IBMBackend
 
 
 class Qpu:
@@ -79,7 +77,7 @@ def generate_deterministic_uuid(namespace: str, name: str) -> UUID:
 	return UUID(bytes=digest[0:16])
 
 
-def backend_to_dto(backend: IBMQBackend) -> Qpu:
+def backend_to_dto(backend: IBMBackend) -> Qpu:
 	properties = backend.properties()
 	status = backend.status()
 
@@ -171,12 +169,13 @@ def backend_to_dto(backend: IBMQBackend) -> Qpu:
 
 def get_all_qpus_and_metrics_as_json_str(token: str):
 	try:
-		IBMQ.disable_account()
+		QiskitRuntimeService.delete_account()
 	except:
 		pass
 
-	account_provider = IBMQ.enable_account(token)
-	backends = account_provider.backends()
+	QiskitRuntimeService.save_account(channel="ibm_quantum", token=token, overwrite=True, set_as_default=True)
+	service = QiskitRuntimeService()
+	backends = service.backends()
 
 	with Pool(16) as p:
 		qpu_dtoes = p.map(backend_to_dto, backends)

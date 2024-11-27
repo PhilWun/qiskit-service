@@ -20,8 +20,6 @@
 import json
 import random
 import numpy as np
-import qiskit.ignis.verification.randomized_benchmarking as rb
-from qiskit import IBMQ
 
 from qiskit import transpile
 from qiskit.circuit.random import random_circuit
