@@ -2,7 +2,10 @@
 .idea/
 .DS_Store
 __pycache__
-app.db
+app/data/app_old.db
 *.pyc
 *.pyo
 .dockerignore
+Dockerfile
+.github
+app/data/app.db

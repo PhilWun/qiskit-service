@@ -1,12 +1,16 @@
-FROM python:3.9-slim
+FROM python:3.11
 
 MAINTAINER Marie Salm "marie.salm@iaas.uni-stuttgart.de"
 
 WORKDIR /app
 RUN apt-get update
-RUN apt-get install -y gcc python3-dev
-COPY ./requirements.txt /app/requirements.txt
-RUN pip install -r requirements.txt
+RUN apt-get install -y gcc python3-dev curl
+RUN pip install poetry gunicorn
+
+COPY ./pyproject.toml /app/pyproject.toml
+COPY ./poetry.lock /app/poetry.lock
+RUN python -m poetry export --without-hashes --format=requirements.txt -o requirements.txt && python -m pip install -r requirements.txt
+
 COPY . /app
 
 EXPOSE 5013/tcp
