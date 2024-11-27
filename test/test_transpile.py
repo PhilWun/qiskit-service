@@ -19,6 +19,9 @@
 
 import unittest
 import os
+
+from qiskit import qasm2
+
 from app.config import basedir
 from app import app, db
 import base64
@@ -161,13 +164,13 @@ class TranspileTestCase(unittest.TestCase):
         self.assertEqual(r.status_code, 202)
         print(r.headers.get("Location"))
 
-    def test_transpile_shor_lima_url_qasm(self):
+    def test_transpile_shor_sherbrooke_url_qasm(self):
 
         # prepare the request
         request = {
             'impl-url': 'https://quantum-circuit.com/api/get/circuit/KzG7MxH6hpBpM9pCt?format=qasm',
             'impl-language': 'OpenQASM',
-            'qpu-name': "ibmq_lima",
+            'qpu-name': "ibm_sherbrooke",
             'input-params': {},
             'token': os.environ["QISKIT_TOKEN"]
         }
@@ -195,7 +198,7 @@ class TranspileTestCase(unittest.TestCase):
         self.assertEqual(r.status_code, 202)
         print(r.headers.get("Location"))
 
-    def test_transpile_shor_nairobi_file_qasm(self):
+    def test_transpile_shor_brisbane_file_qasm(self):
 
         # prepare the request
         file_path = (os.path.dirname(__file__))+'/data/shor-fix-15.qasm'
@@ -204,7 +207,7 @@ class TranspileTestCase(unittest.TestCase):
         request = {
             'impl-data': impl_data,
             'impl-language': 'OpenQASM',
-            'qpu-name': "ibm_nairobi",
+            'qpu-name': "ibm_brisbane",
             'input-params': {},
             'token': os.environ["QISKIT_TOKEN"]
         }
@@ -270,12 +273,13 @@ class TranspileTestCase(unittest.TestCase):
         self.assertEqual(r.status_code, 202)
         print(r.headers.get("Location"))
 
-    def test_transpile_shor_nairobi(self):
+    @unittest.skip("The Shor implementation was deprecated by qiskit.")
+    def test_transpile_shor_kyiv(self):
 
         # prepare the request
         request = {
             'impl-url': "https://raw.githubusercontent.com/PlanQK/qiskit-service/master/test/data/shor_general_qiskit.py",
-            'qpu-name': "ibm_nairobi",
+            'qpu-name': "ibm_kyiv",
             'input-params': {
                 'N': {
                     'rawValue': "9",
@@ -334,7 +338,7 @@ class TranspileTestCase(unittest.TestCase):
         # Build a thousand circuits.
         circs = []
         for _ in range(1000):
-            circs.append(random_circuit(num_qubits=5, depth=4, measure=True).qasm())
+            circs.append(qasm2.dumps(random_circuit(num_qubits=5, depth=4, measure=True)))
 
         request = {
             'impl-qasm': circs,
