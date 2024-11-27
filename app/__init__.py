@@ -23,7 +23,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from redis import Redis
 import rq
-from app import Config
 import logging
 
 
