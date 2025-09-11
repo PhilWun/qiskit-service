@@ -18,23 +18,30 @@
 # ******************************************************************************
 from time import sleep
 
+import qiskit_aer
 from qiskit import QiskitError, QuantumRegister
 from qiskit.providers import BackendV2
 from qiskit.providers.jobstatus import JOB_FINAL_STATES
 from qiskit.providers.exceptions import JobError, JobTimeoutError
 from qiskit_ibm_runtime import QiskitRuntimeService
 
+from app import app
 
-def get_qpu(token, qpu_name, url='https://auth.quantum-computing.ibm.com/api', hub='ibm-q', group='open', project='main') -> BackendV2:
+
+def get_qpu(token, qpu_name, instance: str | None = None) -> BackendV2:
     """Load account from token. Get backend."""
+    if qpu_name == "aer_simulator":
+        return qiskit_aer.Aer.get_backend("aer_simulator")
+
     try:
         QiskitRuntimeService.delete_account()
     except:
         pass
 
-    QiskitRuntimeService.save_account(channel="ibm_quantum", token=token, overwrite=True, set_as_default=True)
+    QiskitRuntimeService.save_account(channel="ibm_cloud", token=token, overwrite=True, set_as_default=True)
     service = QiskitRuntimeService()
-    backend = service.backend(qpu_name, instance=f"{hub}/{group}/{project}")
+    app.logger.info(f"get QPU {qpu_name}, instance: {instance}")
+    backend = service.backend(qpu_name, instance=instance)
 
     return backend
 

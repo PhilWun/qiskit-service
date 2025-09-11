@@ -136,7 +136,7 @@ class TranspileTestCase(unittest.TestCase):
         request = {
             'impl-data': impl_data,
             'impl-language': 'Qiskit',
-            'qpu-name': "ibm_kyiv",
+            'qpu-name': "ibm_kingston",
             'input-params': {},
             'token': os.environ["QISKIT_TOKEN"]
         }
@@ -170,7 +170,7 @@ class TranspileTestCase(unittest.TestCase):
         request = {
             'impl-url': 'https://quantum-circuit.com/api/get/circuit/KzG7MxH6hpBpM9pCt?format=qasm',
             'impl-language': 'OpenQASM',
-            'qpu-name': "ibm_sherbrooke",
+            'qpu-name': "ibm_torino",
             'input-params': {},
             'token': os.environ["QISKIT_TOKEN"]
         }
