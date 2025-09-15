@@ -5,7 +5,7 @@ MAINTAINER Marie Salm "marie.salm@iaas.uni-stuttgart.de"
 WORKDIR /app
 RUN apt-get update
 RUN apt-get install -y gcc python3-dev curl
-RUN pip install poetry gunicorn
+RUN pip install poetry poetry-plugin-export gunicorn
 
 COPY ./pyproject.toml /app/pyproject.toml
 COPY ./poetry.lock /app/poetry.lock
